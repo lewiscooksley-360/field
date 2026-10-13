@@ -14,12 +14,19 @@
     --sand: #EDE4D8;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: transparent; }
+  html, body { background: transparent; width: 100%; height: 100%; overflow: hidden; }
   body {
     font-family: 'Inter Tight', Arial, sans-serif;
     color: var(--black);
-    padding: 8px;
   }
+  /* Fixed 1000 x 640 canvas, scaled to fit whatever size the iframe is */
+  .stage {
+    position: absolute; top: 0; left: 0;
+    width: 1000px; height: 640px;
+    padding: 6px;
+    transform-origin: top left;
+  }
+  .wrap { height: 100%; }
 
   .wrap {
     background: var(--cream);
@@ -92,7 +99,7 @@
     border-radius: 18px;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    padding: 24px 22px;
+    padding: 20px 18px;
     display: flex; flex-direction: column;
     overflow: hidden;
     box-shadow: 0 12px 28px rgba(14,14,14,.14);
@@ -143,7 +150,7 @@
   .back .btitle { font-size: 21px; font-weight: 800; letter-spacing: -.5px; line-height: 1.1; }
   .back .bar { width: 34px; height: 4px; border-radius: 3px; background: var(--black); margin: 12px 0 14px; flex: none; }
   .back ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .back li { position: relative; padding-left: 16px; font-size: 14.5px; font-weight: 600; line-height: 1.42; }
+  .back li { position: relative; padding-left: 16px; font-size: 13.5px; font-weight: 600; line-height: 1.42; }
   .back li::before { content: ""; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--black); }
   .back .hint { display: none; }
   .back .hint svg { stroke: var(--black); }
@@ -172,21 +179,6 @@
   .done i { width: 22px; height: 22px; border-radius: 50%; background: var(--amber); display: inline-flex; align-items: center; justify-content: center; }
   .done svg { width: 13px; height: 13px; stroke: var(--black); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* ── Responsive ── */
-  @media (max-width: 860px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 1100px) {
-    .back li { font-size: 13.5px; }
-    .face { padding: 20px 18px; }
-  }
-  @media (max-width: 560px) {
-    .wrap { padding: 24px 18px; }
-    .head { flex-direction: column; align-items: flex-start; }
-    .grid { grid-template-columns: 1fr; }
-    .card { height: 300px; }
-    h1 { font-size: 28px; }
-  }
   @media (prefers-reduced-motion: reduce) {
     .inner { transition: none; }
   }
@@ -194,7 +186,7 @@
 </head>
 <body>
 
-<div class="wrap">
+<div class="stage" id="stage"><div class="wrap">
   <div class="head">
     <div>
       <div class="eyebrow"><i></i>Field Academy</div>
@@ -304,7 +296,21 @@
     <span class="done" id="done"><i><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></i>Nice one, you've explored all our values!</span>
     <button class="reset" id="reset" type="button">Reset cards</button>
   </div>
-</div>
+</div></div>
+
+<script>
+  // Scale the 1000 x 640 canvas to fit the iframe, whatever its width and height
+  (function () {
+    var stage = document.getElementById('stage');
+    function fit() {
+      var s = Math.min(window.innerWidth / 1000, window.innerHeight / 640);
+      var left = (window.innerWidth - 1000 * s) / 2;
+      stage.style.transform = 'translate(' + left + 'px,0) scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit);
+    fit();
+  })();
+</script>
 
 <script>
   (function () {
